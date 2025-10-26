@@ -1,25 +1,21 @@
-// components/Header.js
 import React, { useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function Header() {
   const router = useRouter();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [menuVisible, setMenuVisible] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // simulate login
 
-  const toggleMenu = () => setMenuVisible(!menuVisible);
+  const toggleMenu = () => {
+    setMenuVisible(!menuVisible);
+  };
 
   const handleLogin = () => {
     setMenuVisible(false);
-    setIsLoggedIn(true); // Simulate login
-    router.push("/Profile");
-  };
-
-  const handleSignup = () => {
-    setMenuVisible(false);
-    router.push("/Signup");
+    router.push("/Login");
   };
 
   const handleProfile = () => {
@@ -27,128 +23,63 @@ export default function Header() {
     router.push("/Profile");
   };
 
-  const handleLogout = () => {
-    setMenuVisible(false);
-    setIsLoggedIn(false);
-    router.push("/");
-  };
-
-  // Menu items depending on login state
-  const menuItems = isLoggedIn
-    ? [
-        { label: "Profile", action: handleProfile },
-        { label: "Logout", action: handleLogout },
-      ]
-    : [
-        { label: "Login", action: handleLogin },
-        { label: "Signup", action: handleSignup },
-      ];
-
   return (
-    <LinearGradient
-      colors={["#1e3c72", "#2a5298"]}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
-      style={styles.header}
-    >
-      <View style={styles.topRow}>
-        <Text style={styles.title}>Hotel Booking System</Text>
+    <LinearGradient colors={["#003366", "#006699"]} style={styles.header}>
+      <Text style={styles.title}>Hotel Booking</Text>
+      <TouchableOpacity onPress={toggleMenu}>
+        <Ionicons name="menu" size={30} color="#fff" />
+      </TouchableOpacity>
 
-        {/* Floating Action Button */}
-        <View style={{ alignItems: "flex-end" }}>
-          <TouchableOpacity style={styles.fab} onPress={toggleMenu}>
-            <Text style={styles.fabIcon}>⚡</Text>
-          </TouchableOpacity>
-
-          {menuVisible && (
-            <View style={styles.dropdown}>
-              {menuItems.map((item, index) => (
-                <TouchableOpacity
-                  key={index}
-                  style={styles.dropdownButton}
-                  onPress={item.action}
-                >
-                  <Text style={styles.dropdownText}>{item.label}</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
+      {menuVisible && (
+        <View style={styles.menu}>
+          {!isLoggedIn ? (
+            <TouchableOpacity style={styles.menuItem} onPress={handleLogin}>
+              <Text style={styles.menuText}>Login</Text>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity style={styles.menuItem} onPress={handleProfile}>
+              <Text style={styles.menuText}>Profile</Text>
+            </TouchableOpacity>
           )}
         </View>
-      </View>
-
-      <Text style={styles.subtitle}>Find your perfect stay ✨</Text>
+      )}
     </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
   header: {
-    paddingVertical: 25,
+    width: "100%",
+    paddingVertical: 15,
     paddingHorizontal: 20,
-    borderBottomLeftRadius: 25,
-    borderBottomRightRadius: 25,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.4,
-    shadowRadius: 10,
-    elevation: 12,
-  },
-  topRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
   },
   title: {
-    color: "#fff",
     fontSize: 22,
+    color: "#fff",
     fontWeight: "bold",
-    letterSpacing: 1,
   },
-  fab: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: "#ffcc00",
-    justifyContent: "center",
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOpacity: 0.3,
-    shadowOffset: { width: 0, height: 4 },
-    shadowRadius: 5,
-    elevation: 8,
-  },
-  fabIcon: {
-    fontSize: 24,
-  },
-  dropdown: {
+  menu: {
     position: "absolute",
-    top: 60,
-    right: 0,
-    width: 160,
-    backgroundColor: "#2a5298",
-    borderRadius: 20,
-    paddingVertical: 15,
-    paddingHorizontal: 15,
+    top: 65,
+    right: 15,
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    padding: 10,
     shadowColor: "#000",
-    shadowOpacity: 0.25,
-    shadowOffset: { width: 0, height: 4 },
-    shadowRadius: 5,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
     elevation: 5,
   },
-  dropdownButton: {
-    paddingVertical: 10,
+  menuItem: {
+    paddingVertical: 8,
+    paddingHorizontal: 15,
   },
-  dropdownText: {
-    color: "#fff",
+  menuText: {
     fontSize: 16,
-    fontWeight: "bold",
-  },
-  subtitle: {
-    color: "#eee",
-    fontSize: 14,
-    marginTop: 10,
-    alignSelf: "center",
-    fontStyle: "italic",
-    opacity: 0.9,
+    color: "#333",
   },
 });
