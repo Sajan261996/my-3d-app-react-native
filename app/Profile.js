@@ -1,159 +1,241 @@
-import React from "react";
+import React, { useRef, useEffect } from "react";
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
-  Image,
   ScrollView,
-  Alert,
+  Dimensions,
+  Animated,
+  Platform,
+  KeyboardAvoidingView,
 } from "react-native";
+import LottieView from "lottie-react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { useRouter } from "expo-router";
 
-export default function Profile() {
-  const router = useRouter();
+const { width, height } = Dimensions.get("window");
 
-  const handleLogout = () => {
-    Alert.alert(
-      "Logout",
-      "Are you sure you want to log out?",
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Logout",
-          onPress: () => {
-            router.push("/Login");
-          },
-        },
-      ],
-      { cancelable: true }
-    );
-  };
+export default function MyBookingScreen() {
+  const floatAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(floatAnim, {
+          toValue: -10,
+          duration: 2500,
+          useNativeDriver: true,
+        }),
+        Animated.timing(floatAnim, {
+          toValue: 0,
+          duration: 2500,
+          useNativeDriver: true,
+        }),
+      ])
+    ).start();
+  }, []);
+
+  const bookings = [
+    {
+      id: 1,
+      roomType: "Deluxe Ocean View",
+      checkIn: "Dec 20, 2025",
+      checkOut: "Dec 25, 2025",
+      guests: "2 Adults, 1 Child",
+      status: "Confirmed",
+    },
+    {
+      id: 2,
+      roomType: "Mountain Suite",
+      checkIn: "Jan 10, 2026",
+      checkOut: "Jan 14, 2026",
+      guests: "2 Adults",
+      status: "Pending",
+    },
+  ];
 
   return (
-    <LinearGradient
-      colors={["#0f2027", "#203a43", "#2c5364"]}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
-      style={styles.container}
-    >
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        <View style={styles.profileCard}>
-          <Image
-            source={{
-              uri: "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
-            }}
-            style={styles.avatar}
-          />
+    <View style={styles.container}>
+      {/* Layer 1: Main Animated Energy Wave */}
+      <LottieView
+        source={require("../app/(tabs)/assets/energy_wave.json")}
+        autoPlay
+        loop
+        resizeMode="cover"
+        style={styles.backgroundAnimation}
+      />
 
-          <Text style={styles.name}>John Doe</Text>
-          <Text style={styles.email}>johndoe@email.com</Text>
+      {/* Layer 2: Floating Particles */}
+      <LottieView
+        source={require("../app/(tabs)/assets/energy_wave.json")}
+        autoPlay
+        loop
+        resizeMode="cover"
+        style={[styles.backgroundAnimation, { opacity: 0.6 }]}
+      />
 
-          <View style={styles.infoBox}>
-            <View style={styles.infoItem}>
-              <Text style={styles.infoLabel}>Bookings</Text>
-              <Text style={styles.infoValue}>12</Text>
-            </View>
+      {/* Layer 3: Gradient Overlay */}
+      <LinearGradient
+        colors={["rgba(0,0,0,0.7)", "rgba(0,30,60,0.6)", "rgba(0,255,255,0.1)"]}
+        style={styles.gradientOverlay}
+      />
 
-            <View style={styles.infoItem}>
-              <Text style={styles.infoLabel}>Rewards</Text>
-              <Text style={styles.infoValue}>₹2,500</Text>
-            </View>
-          </View>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={{ flex: 1 }}
+      >
+        <ScrollView contentContainerStyle={styles.scrollContent}>
+          <Text style={styles.title}>My Bookings</Text>
 
-          <TouchableOpacity style={styles.editButton}>
-            <Text style={styles.editText}>Edit Profile</Text>
-          </TouchableOpacity>
+          {bookings.map((item) => (
+            <Animated.View
+              key={item.id}
+              style={[styles.bookingWrapper, { transform: [{ translateY: floatAnim }] }]}
+            >
+              <LinearGradient
+                colors={["rgba(0,255,255,0.25)", "rgba(0,0,0,0.7)"]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.bookingCard}
+              >
+                <Text style={styles.roomType}>{item.roomType}</Text>
 
-          <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-            <Text style={styles.logoutText}>Logout</Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
-    </LinearGradient>
+                <View style={styles.detailRow}>
+                  <Text style={styles.label}>Check-In:</Text>
+                  <Text style={styles.value}>{item.checkIn}</Text>
+                </View>
+
+                <View style={styles.detailRow}>
+                  <Text style={styles.label}>Check-Out:</Text>
+                  <Text style={styles.value}>{item.checkOut}</Text>
+                </View>
+
+                <View style={styles.detailRow}>
+                  <Text style={styles.label}>Guests:</Text>
+                  <Text style={styles.value}>{item.guests}</Text>
+                </View>
+
+                <View style={styles.detailRow}>
+                  <Text style={styles.label}>Status:</Text>
+                  <Text
+                    style={[
+                      styles.value,
+                      item.status === "Confirmed"
+                        ? { color: "#00ffb3" }
+                        : { color: "#ffcc00" },
+                    ]}
+                  >
+                    {item.status}
+                  </Text>
+                </View>
+
+                <View style={styles.buttonRow}>
+                  <TouchableOpacity style={styles.btnOutline}>
+                    <Text style={styles.btnOutlineText}>View Details</Text>
+                  </TouchableOpacity>
+
+                  <LinearGradient
+                    colors={["#00fff5", "#008080"]}
+                    style={styles.btnSolid}
+                  >
+                    <Text style={styles.btnSolidText}>Cancel</Text>
+                  </LinearGradient>
+                </View>
+              </LinearGradient>
+            </Animated.View>
+          ))}
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "#000",
+  },
+  backgroundAnimation: {
+    position: "absolute",
+    width: width,
+    height: height,
+  },
+  gradientOverlay: {
+    position: "absolute",
+    width: width,
+    height: height,
   },
   scrollContent: {
     flexGrow: 1,
-    justifyContent: "center",
     alignItems: "center",
-    paddingVertical: 30,
+    paddingVertical: 40,
   },
-  profileCard: {
-    width: "85%",
-    backgroundColor: "rgba(255,255,255,0.1)",
-    borderRadius: 20,
+  title: {
+    fontSize: 30,
+    fontWeight: "bold",
+    color: "#00fff5",
+    marginBottom: 25,
+    textShadowColor: "#00fff5",
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 15,
+  },
+  bookingWrapper: {
+    width: "90%",
+  },
+  bookingCard: {
+    borderRadius: 25,
     padding: 25,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOpacity: 0.4,
+    marginBottom: 30,
+    borderWidth: 1,
+    borderColor: "rgba(0,255,255,0.5)",
+    shadowColor: "#00fff5",
     shadowOffset: { width: 0, height: 10 },
-    shadowRadius: 10,
-    elevation: 10,
+    shadowOpacity: 0.4,
+    shadowRadius: 15,
+    elevation: 12,
   },
-  avatar: {
-    width: 110,
-    height: 110,
-    borderRadius: 55,
-    borderWidth: 3,
-    borderColor: "#ffcc00",
-    marginBottom: 15,
-  },
-  name: {
+  roomType: {
     fontSize: 22,
     fontWeight: "bold",
-    color: "#fff",
+    color: "#00fff5",
+    marginBottom: 10,
   },
-  email: {
-    fontSize: 16,
-    color: "#ccc",
-    marginBottom: 20,
-  },
-  infoBox: {
+  detailRow: {
     flexDirection: "row",
-    justifyContent: "space-around",
-    width: "100%",
-    marginVertical: 20,
+    justifyContent: "space-between",
+    marginBottom: 6,
   },
-  infoItem: {
-    alignItems: "center",
-  },
-  infoLabel: {
+  label: {
+    color: "#aaa",
     fontSize: 15,
-    color: "#ddd",
   },
-  infoValue: {
-    fontSize: 18,
-    color: "#ffcc00",
-    fontWeight: "bold",
-  },
-  editButton: {
-    backgroundColor: "#ffcc00",
-    paddingVertical: 10,
-    paddingHorizontal: 30,
-    borderRadius: 25,
-    marginBottom: 15,
-  },
-  editText: {
-    color: "#222",
-    fontWeight: "600",
-    fontSize: 16,
-  },
-  logoutButton: {
-    backgroundColor: "#e63946",
-    paddingVertical: 10,
-    paddingHorizontal: 40,
-    borderRadius: 25,
-  },
-  logoutText: {
+  value: {
     color: "#fff",
+    fontSize: 15,
+  },
+  buttonRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 18,
+  },
+  btnOutline: {
+    borderWidth: 1,
+    borderColor: "#00fff5",
+    borderRadius: 10,
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+  },
+  btnOutlineText: {
+    color: "#00fff5",
     fontWeight: "600",
-    fontSize: 16,
+  },
+  btnSolid: {
+    borderRadius: 10,
+    paddingVertical: 8,
+    paddingHorizontal: 25,
+  },
+  btnSolidText: {
+    color: "#000",
+    fontWeight: "bold",
   },
 });

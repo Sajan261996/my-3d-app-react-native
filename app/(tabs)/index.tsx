@@ -1,8 +1,8 @@
 import React from "react";
 import { SafeAreaView, StyleSheet, View } from "react-native";
 import Header from "../../components/Header";
-// import Footer from "../../components/Footer";
-import Home from "../../app/HomeScreen";
+import Footer from "../../components/Footer";
+import Home from "../../app/HomeScreen"; 
 
 export default function HomeScreen() {
   return (
@@ -11,11 +11,9 @@ export default function HomeScreen() {
 
       <View style={styles.body}>
         <Home />
-    
       </View>
 
-
-      {/* <Footer /> */}
+      <Footer />
     </SafeAreaView>
   );
 }
